@@ -1,9 +1,15 @@
 package db
 
 import (
-	"gorm.io/gorm"
-)
+	"log"
 
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
+
+	"ForumWeb/internal/config"
+	"ForumWeb/internal/models"
+)
 
 var DB *gorm.DB
 
@@ -35,4 +41,12 @@ func CloseDB() {
 		return
 	}
 	sqlDB.Close()
+}
+
+func Migrate(db *gorm.DB) error {
+	return db.AutoMigrate(
+		&models.User{},
+		&models.Question{},
+		&models.Answer{},
+	)
 }
