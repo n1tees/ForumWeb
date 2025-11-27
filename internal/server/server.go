@@ -41,17 +41,19 @@ func Run() error {
 	return s.start()
 }
 
+// gracefull shutdown
 func (s *Server) start() error {
+
 	errCh := make(chan error, 1)
 
 	go func() {
 		log.Println("HTTP server started on", s.httpServer.Addr)
+
 		if err := s.httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			errCh <- err
 		}
 	}()
 
-	// ждём сигналы ОС
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
@@ -69,7 +71,7 @@ func (s *Server) start() error {
 		return nil
 
 	case err := <-errCh:
-		// упали при старте/во время работы
+
 		return err
 	}
 }
